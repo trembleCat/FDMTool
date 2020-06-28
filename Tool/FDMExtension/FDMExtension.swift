@@ -178,20 +178,20 @@ extension String {
          
              return dic
          }catch{
-             return ["String解析失败":"JsonString转Dictionary【失败】"]
+             return nil
          }
      }
     
     /// 9.JsonArray 转 DictionArray
-    func toDiction_Array() -> NSArray {
+    func toDiction_Array() -> NSArray? {
         let jsonData: Data = self.data(using: .utf8)!
         
         do {
             let array = try JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers)
             
-            return array as! NSArray
+            return array as? NSArray
         } catch {
-            return ["JsonArray 转 DictionArray失败"]
+            return nil
         }
     }
     
@@ -486,7 +486,7 @@ extension UIImage {
 //MARK: Array
 extension Array {
     /// 数组转json
-    func toJSONString() -> String {
+    func toJSONString() -> String? {
         let array = self as NSArray
         return array.toJSONString()
     }
@@ -495,9 +495,9 @@ extension Array {
 //MARK: NSArray
 extension NSArray {
     /// 数组转json
-    func toJSONString() -> String {
+    func toJSONString() -> String? {
         if (!JSONSerialization.isValidJSONObject(self)) {
-            return "数组转json【失败】"
+            return nil
         }
          
         let data : NSData! = try? JSONSerialization.data(withJSONObject: self, options: []) as NSData
@@ -509,7 +509,7 @@ extension NSArray {
 //MARK: Dictionary
 extension Dictionary {
     /// Dictionary<String,Any>转Json字符串
-    func toJSONString() -> String{
+    func toJSONString() -> String?{
         let dictionary = self as NSDictionary
         return dictionary.toJSONString()
     }
@@ -518,9 +518,9 @@ extension Dictionary {
 //MARK: NSDictionary
 extension NSDictionary {
     /// Dictionary<String,Any>转Json字符串
-    func toJSONString() -> String{
+    func toJSONString() -> String?{
         if (!JSONSerialization.isValidJSONObject(self)) {
-            return "Dictionary<String,Any>转Json字符串【失败】"
+            return nil
         }
         let data : NSData! = try? JSONSerialization.data(withJSONObject: self, options: []) as NSData
         let JSONString = NSString(data:data as Data,encoding: String.Encoding.utf8.rawValue)

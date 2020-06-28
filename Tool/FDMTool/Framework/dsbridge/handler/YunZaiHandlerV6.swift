@@ -10,9 +10,9 @@ import UIKit
 
 class YunZaiHandlerV6{
     
-    var vc: UIViewController?
+    var vc: MainWebViewController?
     
-    init(vc: UIViewController?) {
+    init(vc: MainWebViewController?) {
         self.vc = vc
     }
     
