@@ -19,7 +19,7 @@ class NetworkManager: NSObject {
 extension NetworkManager {
     
     /**
-     基本网络请求
+     基本网络请求 需要判断 401 Token失效
      
      @param requestParam: 请求数据
             success: 请求成功回调

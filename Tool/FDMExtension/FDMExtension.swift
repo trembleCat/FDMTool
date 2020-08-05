@@ -67,6 +67,7 @@ extension String {
      13.生成条形码图片
      14.获取当前名称的本地图片
      15.包含汉字的长度(汉字占两个长度)
+     16.打印自己打印自己并将自己返回
     ==================*/
     
     /// 1.Base64 编解码 -encode: true:编码 false:解码 需要先将占位符换为=
@@ -174,7 +175,7 @@ extension String {
     /// 8.JsonString转为Dictionary <String,Any>
      func toDictionary() -> Dictionary<String,Any>?{
          do {
-         let dic = try JSONSerialization.jsonObject(with: self.data(using: String.Encoding.utf8)!, options: JSONSerialization.ReadingOptions.mutableLeaves) as! Dictionary<String, Any>
+         let dic = try JSONSerialization.jsonObject(with: self.data(using: String.Encoding.utf8)!, options: .mutableLeaves) as! Dictionary<String, Any>
          
              return dic
          }catch{
@@ -316,6 +317,15 @@ extension String {
             }
         }
         return count
+    }
+    
+    /// 16.打印自己打印自己并将自己返回
+    func log(_ title: String) -> String {
+        #if DEBUG
+        print(title + ":" + self)
+        #endif
+        
+        return self
     }
 }
 

@@ -25,3 +25,20 @@ class BaseModel<T: Mappable>: Mappable {
         res <- map["res"]
     }
 }
+
+class BaseArrayModel<T: Mappable>: Mappable {
+    
+    var code: Int?
+    var success: Bool?
+    var res: [T]?
+    
+    required init?(map: Map) {
+        
+    }
+    
+    func mapping(map: Map) {
+        code <- map["code"]
+        success <- map["success"]
+        res <- map["res"]
+    }
+}
