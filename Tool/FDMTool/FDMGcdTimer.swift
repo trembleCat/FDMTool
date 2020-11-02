@@ -37,6 +37,9 @@ class FDMGcdTimer: NSObject {
     
     func cancel() {
         gcdTimer?.cancel()
-        gcdTimer = nil
+        
+        if gcdTimer != nil {
+            gcdTimer = nil
+        }
     }
 }

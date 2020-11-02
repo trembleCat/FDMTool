@@ -7,13 +7,14 @@
 //
 
 import UIKit
+import MobileCoreServices
 
-// 屏幕高度
+/// 屏幕高度
 let FScreenH = UIScreen.main.bounds.height
-// 屏幕宽度
+/// 屏幕宽度
 let FScreenW = UIScreen.main.bounds.width
 
-// 手机型号
+/// 手机型号
 enum PhoneModel {
     case iPhone4_4s_5_5s_5c
     case iPhone6_6s_7_8
@@ -25,10 +26,31 @@ enum PhoneModel {
     case otherFullScreen
 }
 
+/// 转场动画类型
+enum TransitonAnimationType {
+    case Present
+    case Dissmiss
+    case Push
+    case Pop
+}
+
+
+//MARK: - public
+
+/// 1.打印
+public func FLog<T,K>(title: T, message: K, file: String = #file, funcName: String = #function, lineNum: Int = #line) {
+    #if DEBUG
+    let fileName = (file as NSString).lastPathComponent
+    print("================================\n  标题:【\(title)】\n  文件名:【\(fileName)】\n  行号: 【\(lineNum)】\n  信息: 【\(message)】\n================================")
+    #endif
+}
+
+
+//MARK: - FDMTool
 class FDMTool: NSObject {
     /*==================
-     1.普通打印
-     2.网络请求打印
+     1.打印
+     
      3.快捷弹窗提示 提示
      4.快捷弹窗提示 提示
      5.快捷弹窗提示 好
@@ -45,6 +67,8 @@ class FDMTool: NSObject {
      16.获取日期 毫秒级 时间戳 - 13位(带小数点)
      17.iOS13获取deviceToken
      18.X - N 的随机数
+     19.获取沙盒文件完整路径 dirpath:FileManager.default.urls(for: 路径, in: .userDomainMask)[0]
+     20.根据后缀获取对应的Mime-Type nameSuffix:文件名后缀，例如name = 111.mp4 ,传mp4
      
      缓存和documents文件大小总和
      documents文件大小
@@ -52,28 +76,6 @@ class FDMTool: NSObject {
      清理缓存  -return是否清理成功
      清理documents文件 -return是否清理成功
     ==================*/
-    
-    /// 1.普通打印
-    class func Log<T,K>(title: T, message: K, file: String = #file, funcName: String = #function, lineNum: Int = #line) {
-        #if DEBUG
-        let fileName = (file as NSString).lastPathComponent
-        print("================================\n  标题:【\(title)】\n  文件名:【\(fileName)】\n  行号: 【\(lineNum)】\n  信息: 【\(message)】\n================================")
-        #endif
-    }
-    
-    /// 2.网络请求打印
-    class func LogWithNetwork<T,K>(title: T, message : K, isSuccess : Bool , file: String = #file, funcName: String = #function, lineNum: Int = #line) {
-        #if DEBUG
-        let fileName = (file as NSString).lastPathComponent
-        
-        if isSuccess {
-            print("================================\n  标题:【\(title) 请求成功】\n  文件名:【\(fileName)】\n  行号: 【\(lineNum)】\n  信息: 【\(message)】\n================================")
-        }else{
-            print("================================\n  标题:【\(title) 请求失败】\n  文件名:【\(fileName)】\n  行号: 【\(lineNum)】\n  错误信息: 【\(message)】\n================================")
-        }
-        
-        #endif
-    }
     
     /// 3.快捷弹窗提示 提示
     class func showTip(message:String, viewController:UIViewController) -> Void {
@@ -225,6 +227,45 @@ class FDMTool: NSObject {
         return CGFloat(arc4random() % (end - start) + start)
     }
     
+    /// 19.获取沙盒文件完整路径 dirpath:FileManager.default.urls(for: 路径, in: .userDomainMask)[0]
+    class func getAllFilePath(_ dirPath:String) -> [String]? {
+        var filePath = [String]()
+        
+        do {
+            let fileAry = try FileManager.default.contentsOfDirectory(atPath: dirPath)
+            
+            for fileName in fileAry {
+                var isDir: ObjCBool = true
+                let fullPath = dirPath + "/" + fileName
+                
+                if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir){
+                    if !isDir.boolValue {
+                        filePath.append(fullPath)
+                    }
+                }
+            }
+            
+        } catch let error{
+            FLog(title: "获取本地文件列表失败", message: error)
+        }
+        
+        return filePath
+    }
+    
+    /// 20.根据后缀获取对应的Mime-Type nameSuffix:文件名后缀，例如name = 111.mp4 ,传mp4
+    class func mimeType(nameSuffix: String) -> String {
+        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
+                                                            nameSuffix as NSString,
+                                                            nil)?.takeRetainedValue() {
+            if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?
+                .takeRetainedValue() {
+                return mimetype as String
+            }
+        }
+        //文件资源类型如果不知道，传万能类型application/octet-stream，服务器会自动解析文件类
+        return "application/octet-stream"
+    }
+    
     /// 缓存和documents文件大小总和
     class func cacheAndDocumentsSize() -> String{
         let documentsFileSize = documentsSize()
@@ -342,3 +383,4 @@ class FDMTool: NSObject {
         return result
     }
 }
+

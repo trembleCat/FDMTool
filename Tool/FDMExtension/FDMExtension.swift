@@ -49,6 +49,17 @@ extension UIView {
     
 }
 
+
+//MARK: - UILabel
+extension UILabel {
+    /// 设置字体，字号，颜色
+    func setFontName(_ fontNmae: String, fontSize: CGFloat, fontColor: UIColor = .black){
+        self.font = UIFont(name: fontNmae, size: fontSize)
+        self.textColor = fontColor
+    }
+}
+
+
 //MARK: String
 extension String {
     /*==================
@@ -68,6 +79,11 @@ extension String {
      14.获取当前名称的本地图片
      15.包含汉字的长度(汉字占两个长度)
      16.打印自己打印自己并将自己返回
+     17.将原始的url编码为合法的url(解决url中文的问题)
+     18.将编码后的url转换回原始的url
+     19.判断是不是Emoji Returns: true false
+     20.判断是不是Emoji Returns: true false
+     21.去除字符串中的emoji表情
     ==================*/
     
     /// 1.Base64 编解码 -encode: true:编码 false:解码 需要先将占位符换为=
@@ -320,12 +336,80 @@ extension String {
     }
     
     /// 16.打印自己打印自己并将自己返回
+    @discardableResult
     func log(_ title: String) -> String {
         #if DEBUG
-        print(title + ":" + self)
+        print("====================================")
+        print(title + "  :  " + self)
+        print("====================================")
         #endif
         
         return self
+    }
+    
+    /// 17.将原始的url编码为合法的url(解决url中文的问题)
+    func urlEncoded() -> String {
+        var encodeUrlString:String?
+        if isIncludeChineseIn(string: self) {
+            encodeUrlString = self.addingPercentEncoding(withAllowedCharacters:.urlQueryAllowed)
+        }else{
+            encodeUrlString = self
+        }
+        return encodeUrlString ?? ""
+    }
+    
+    /// 18.将编码后的url转换回原始的url
+    func urlDecoded() -> String {
+        return self.removingPercentEncoding ?? ""
+    }
+    
+    /// 19.判断是不是Emoji Returns: true false
+    func containsEmoji()->Bool{
+        if self.isNineKeyBoard(){
+            return false
+        }
+        for scalar in unicodeScalars {
+            switch scalar.value {
+            case 0x1F600...0x1F64F,
+                 0x1F300...0x1F5FF,
+                 0x1F680...0x1F6FF,
+                 0x2600...0x26FF,
+                 0x2700...0x27BF,
+                 0xFE00...0xFE0F,
+                 0x1F900...0x1F9FF,
+                  0x1F1FF...0x1F3F3:
+                return true
+            default:
+                continue
+            }
+        }
+        
+        return false
+    }
+    
+    /// 20.判断是不是Emoji Returns: true false
+    func hasEmoji()->Bool {
+        if self.isNineKeyBoard(){
+            return false
+        }
+        let pattern = "[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]"
+        let pred = NSPredicate(format: "SELF MATCHES %@",pattern)
+        return pred.evaluate(with: self)
+    }
+    
+    /// 21.去除字符串中的表情
+    func disable_emoji()->String{
+        do {
+            let string_NS = self as NSString
+            let regex = try NSRegularExpression(pattern: "[^\\u0020-\\u007E\\u00A0-\\u00BE\\u2E80-\\uA4CF\\uF900-\\uFAFF\\uFE30-\\uFE4F\\uFF00-\\uFFEF\\u0080-\\u009F\\u2000-\\u201f\r\n]", options: NSRegularExpression.Options.caseInsensitive)
+            
+            let modifiedString = regex.stringByReplacingMatches(in: string_NS as String, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, string_NS.length), withTemplate: "")
+            
+            return modifiedString
+        } catch {
+            "\(error)".log("去除字符串中的表情失败")
+        }
+        return ""
     }
 }
 
@@ -440,6 +524,7 @@ extension UIColor {
 //MARK: UIImage
 extension UIImage {
     /*==================
+     0.【Class】通过名字返回一张图片
      1.【Class】通过颜色返回一张图片
      2.【Class】获取网络图片尺寸
      3.【Class】截取View作为图片 view:被设置的View包括子视图会转为图片
@@ -447,6 +532,11 @@ extension UIImage {
      5.【Class】生成条形码图片
      6.CoreGraphics 绘制圆角
     ==================*/
+    
+    /// 0.通过名字返回一张图片
+    class func imageName(_ name: String) -> UIImage? {
+        return UIImage(named: name)
+    }
     
     /// 1.通过颜色返回一张图片
     class func imageFromColor(_ color: UIColor) -> UIImage {
