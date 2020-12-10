@@ -42,6 +42,7 @@ extension FDMCustomButton {
         super.layoutSubviews()
         
         guard bounds != CGRect.zero else { return }
+        titleLabel?.sizeToFit()
         
         let imageSize = imageView?.bounds.size
         let titleSize = titleLabel?.bounds.size

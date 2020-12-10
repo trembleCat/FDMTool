@@ -6,6 +6,7 @@
 //
 
 /*==================
+ 0.【Class】适配暗黑模式颜色
  1.【Class】RGB颜色快捷方式
  2.【Class】十六进制RGB
  3.【Class】随机色
@@ -18,6 +19,23 @@ import UIKit
 
 //MARK: UIColor
 extension UIColor {
+    
+    /**
+     0.适配暗黑模式颜色
+     */
+    class func colorWithLight(_ lightColor: UIColor, Dark darkColor: UIColor?) -> UIColor {
+        if #available(iOS 13.0, *) {
+            return UIColor { (traitCollection) -> UIColor in
+                if let darkColor = darkColor, traitCollection.userInterfaceStyle == .dark {
+                    return darkColor
+                } else {
+                    return lightColor
+                }
+            }
+        } else {
+            return lightColor
+        }
+    }
     
     /**
      1.RGB颜色快捷方式

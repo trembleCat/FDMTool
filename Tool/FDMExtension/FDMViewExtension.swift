@@ -32,7 +32,7 @@ extension UIView {
         self.setNeedsLayout()
         self.layoutIfNeeded()
         
-        UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.isOpaque, 0)
+        UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, UIScreen.main.scale)
         self.layer.render(in: UIGraphicsGetCurrentContext()!)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()

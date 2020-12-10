@@ -45,6 +45,11 @@ public func FLog<T,K>(title: T, message: K, file: String = #file, funcName: Stri
     #endif
 }
 
+/// 是否为全面屏
+public func FPhoneIsScreen() -> Bool {
+    return FDMTool.bottomSafeHeight() > 0
+}
+
 
 //MARK: - FDMTool
 class FDMTool: NSObject {
@@ -127,7 +132,7 @@ class FDMTool: NSObject {
     }
     
     /// 8.获取状态栏高度
-    class func screenWithStatusHeight() -> CGFloat {
+    class func statusHeight() -> CGFloat {
         if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
             return 44.0
         }else{
@@ -136,7 +141,7 @@ class FDMTool: NSObject {
     }
     
     /// 9.获取tabBar高度
-    class func screenWithTabBarHeight() -> CGFloat {
+    class func tabBarHeight() -> CGFloat {
         if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
             return 49.0 + 34.0
         }else{
@@ -145,7 +150,7 @@ class FDMTool: NSObject {
     }
     
     /// 10.获取底部安全区高度
-    class func screenWithBottomSafeHeight() -> CGFloat {
+    class func bottomSafeHeight() -> CGFloat {
         if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
             return 34.0
         }else{
