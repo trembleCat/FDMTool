@@ -17,22 +17,27 @@ import UIKit
 extension UIView {
     
     /**
-     1.创建毛玻璃 在contentView上添加子视图
+     1.创建毛玻璃
      */
-    class func groundGlass( style:UIBlurEffect.Style) -> UIVisualEffectView{
+    class func groundGlass(style:UIBlurEffect.Style) -> UIView{
         let blurEddect = UIBlurEffect(style:style)
         let blurView = UIVisualEffectView(effect: blurEddect)
-        return blurView
+        return blurView.contentView
     }
     
     /**
      2.截取View作为图片
      */
-    func toImage() -> UIImage? {
+    func toImage(size: CGSize = .zero) -> UIImage? {
         self.setNeedsLayout()
         self.layoutIfNeeded()
         
-        UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, UIScreen.main.scale)
+        var contentSize = size
+        if contentSize == .zero {
+            contentSize = self.bounds.size
+        }
+        
+        UIGraphicsBeginImageContextWithOptions(contentSize, false, UIScreen.main.scale < 3 ? 3 : UIScreen.main.scale)
         self.layer.render(in: UIGraphicsGetCurrentContext()!)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -44,7 +49,7 @@ extension UIView {
      3.通过Bezier创建某个圆角 -corner:某个角或多个角,多个角传UIRectCorner(rawValue:),四个角传.allCorners
      */
     func roundedCorners(corners:UIRectCorner, cornerRadius:Double, viewSize: CGSize){
-        let cornerLaye = CAShapeLayer.init()
+        let cornerLaye = CAShapeLayer()
         let maskPath = UIBezierPath(roundedRect: CGRect(origin: CGPoint.zero, size: viewSize), byRoundingCorners: corners, cornerRadii:CGSize(width: cornerRadius, height: cornerRadius))
         cornerLaye.path = maskPath.cgPath
         cornerLaye.frame = CGRect(origin: CGPoint.zero, size: viewSize)
