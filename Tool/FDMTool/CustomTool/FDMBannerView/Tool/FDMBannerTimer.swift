@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FDMGcdTimer: NSObject {
+class FDMBannerTimer: NSObject {
     
     /// gcd
     var gcdTimer: DispatchSourceTimer?

@@ -82,7 +82,12 @@ extension UIColor {
     }
     
     /**
-     4.创建渐变色Layer  frame: layer大小  colors:渐变颜色数组  pointAry:[渐变起点0，渐变终点1] locations: 按照值颜色变化[0 - 1]
+     4.创建渐变色Layer
+     
+     - parameter frame: layer大小
+     - parameter colors: 渐变颜色数组
+     - parameter pointAry: [渐变起点0，渐变终点1]
+     - parameter locations: 按照值颜色变化[0 - 1]
      */
     class func gradationLayer(frame:CGRect,colors:Array<CGColor>,points:Array<CGPoint>,locations:Array<NSNumber>) -> CAGradientLayer{
         

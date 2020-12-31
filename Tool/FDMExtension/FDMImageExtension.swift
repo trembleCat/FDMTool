@@ -6,7 +6,6 @@
 //
 
 /*==================
- 0.【Class】通过名字返回一张图片
  1.【Class】通过颜色返回一张图片
  2.【Class】获取网络图片尺寸
  3.【Class】截取View作为图片 view:被设置的View包括子视图会转为图片
@@ -19,13 +18,6 @@ import UIKit
 
 //MARK: UIImage
 extension UIImage {
-    
-    /**
-     0.通过名字返回一张图片
-     */
-    class func imageName(_ name: String) -> UIImage? {
-        return UIImage(named: name)
-    }
     
     /**
      1.通过颜色返回一张图片

@@ -21,3 +21,14 @@ class UIBaseTableViewCell: UITableViewCell {
     }
 
 }
+
+//MARK: - Action
+extension UIBaseTableViewCell {
+    
+    /**
+     返回当前类型的String
+     */
+    class func toString() -> String {
+        return NSStringFromClass(self)
+    }
+}

@@ -53,18 +53,28 @@ extension FDMCustomButton {
         case .FDMButtomImageLeft:
             imageEdgeInsets = UIEdgeInsets(top: 0, left: -imageSpacing * 0.5, bottom: 0, right: imageSpacing * 0.5)
             titleEdgeInsets = UIEdgeInsets(top: 0, left: imageSpacing * 0.5, bottom: 0, right: -imageSpacing * 0.5)
+            
             break
         case .FDMButtomImageRight:
             imageEdgeInsets = UIEdgeInsets(top: 0, left: titleSize!.width + imageSpacing * 0.5, bottom: 0, right: -titleSize!.width - imageSpacing * 0.5)
             titleEdgeInsets = UIEdgeInsets(top: 0, left: -imageSize!.width - imageSpacing * 0.5, bottom: 0, right: imageSize!.width + imageSpacing * 0.5)
+            
             break
         case .FDMButtomImageTop:
             imageEdgeInsets = UIEdgeInsets(top: -titleSize!.height * 0.5 - imageSpacing * 0.5, left: titleSize!.width * 0.5, bottom: titleSize!.height * 0.5 + imageSpacing * 0.5, right: -titleSize!.width * 0.5)
             titleEdgeInsets = UIEdgeInsets(top: imageSize!.height * 0.5 + imageSpacing * 0.5, left: -imageSize!.width * 0.5, bottom: -imageSize!.height * 0.5 - imageSpacing * 0.5, right: imageSize!.width * 0.5)
+            
+            imageView?.center.x = self.frame.width / 2
+            titleLabel?.center.x = self.frame.width / 2
+            
             break
         case .FDMButtomImageBottom:
             imageEdgeInsets = UIEdgeInsets(top: titleSize!.height * 0.5 + imageSpacing * 0.5, left: titleSize!.width * 0.5, bottom: -titleSize!.height * 0.5 - imageSpacing * 0.5, right: -titleSize!.width * 0.5)
             titleEdgeInsets = UIEdgeInsets(top: -imageSize!.height * 0.5 - imageSpacing * 0.5, left: -imageSize!.width * 0.5, bottom: imageSize!.height * 0.5 + imageSpacing * 0.5, right: imageSize!.width * 0.5)
+            
+            imageView?.center.x = self.frame.width / 2
+            titleLabel?.center.x = self.frame.width / 2
+            
             break
         }
     }
