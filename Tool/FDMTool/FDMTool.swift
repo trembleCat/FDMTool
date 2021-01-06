@@ -16,13 +16,12 @@ let FScreenW = UIScreen.main.bounds.width
 
 /// 手机型号
 enum PhoneModel {
-    case iPhone4_4s_5_5s_5c
+    case iPhone4_4s
+    case iphone5_5s_5c_se
     case iPhone6_6s_7_8
-    case iPhone6P_6sP_7P_8p
-    case iPhone_X
-    case iPhone_XR
-    case iPhone_XS
-    case iPhone_XS_Max
+    case iPhone6p_6sP_7P_8p
+    case iPhone_X_XS_11Pro
+    case iPhone_XSMax_XR_11_11ProMax
     case otherFullScreen
 }
 
@@ -41,7 +40,7 @@ enum TransitonAnimationType {
 public func FLog<T,K>(title: T, message: K, file: String = #file, funcName: String = #function, lineNum: Int = #line) {
     #if DEBUG
     let fileName = (file as NSString).lastPathComponent
-    print("================================\n  标题:【\(title)】\n  文件名:【\(fileName)】\n  行号: 【\(lineNum)】\n  信息: 【\(message)】\n================================")
+    print("================================\n  标题:【\(title)】\n  文件名:【\(fileName)】\n  方法名:【\(funcName)】\n  行号: 【\(lineNum)】\n  信息: 【\(message)】\n================================")
     #endif
 }
 
@@ -112,28 +111,26 @@ class FDMTool: NSObject {
     
     /// 7.获取手机型号
     class func getPhoneModel() -> PhoneModel{
-        if FScreenW == 320.0 && FScreenH == 480.0{    // iPhone 4_4s_5_5s_5c
-            return.iPhone4_4s_5_5s_5c
+        if FScreenW == 320.0 && FScreenH == 480.0{    // iPhone 4_4s
+            return .iPhone4_4s
+        }else if FScreenW == 320.0 && FScreenH == 568.0 {     // iphone5_5s_5c_se
+            return .iphone5_5s_5c_se
         }else if FScreenW == 375.0 && FScreenH == 667.0{    // iPhone 6_6s_7_8
-            return.iPhone6_6s_7_8
-        }else if FScreenW == 414.0 && FScreenH == 736.0{    // iPhone 6P_6sP_7P_8P
-            return.iPhone6P_6sP_7P_8p
-        }else if FScreenW == 375.0 && FScreenH == 812.0 {    // iPhone X
-            return.iPhone_X
-        }else if FScreenW == 414.0 && FScreenH == 896.0{    // iPhone XR
-            return.iPhone_XR
-        }else if FScreenW == 375.0 && FScreenH == 812.0{    // iPhone XS
-            return.iPhone_XS
-        }else if FScreenW == 414.0 && FScreenH == 896.0{    // iPhone XS Max
-            return.iPhone_XS_Max
-        }else{  //其他手机
+            return .iPhone6_6s_7_8
+        }else if FScreenW == 414.0 && FScreenH == 736.0{    // iPhone 6p_6sP_7P_8P
+            return .iPhone6p_6sP_7P_8p
+        }else if FScreenW == 375.0 && FScreenH == 812.0 {    // iPhone X_XS_11Pro 全面屏
+            return .iPhone_X_XS_11Pro
+        }else if FScreenW == 414.0 && FScreenH == 896.0{    // iPhone_XSMax_XR_11_11ProMax 全面屏
+            return .iPhone_XSMax_XR_11_11ProMax
+        }else{  //其他全面屏手机
             return.otherFullScreen
         }
     }
     
     /// 8.获取状态栏高度
     class func statusHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
+        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
             return 44.0
         }else{
             return 20.0
@@ -142,7 +139,7 @@ class FDMTool: NSObject {
     
     /// 9.获取tabBar高度
     class func tabBarHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
+        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
             return 49.0 + 34.0
         }else{
             return 49.0
@@ -151,7 +148,7 @@ class FDMTool: NSObject {
     
     /// 10.获取底部安全区高度
     class func bottomSafeHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X || getPhoneModel() == .iPhone_XR || getPhoneModel() == .iPhone_XS || getPhoneModel() == .iPhone_XS_Max || getPhoneModel() == .otherFullScreen{
+        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
             return 34.0
         }else{
             return 0.0

@@ -54,18 +54,6 @@ extension UIView {
 }
 
 
-//MARK: - UILabel
-extension UILabel {
-    
-    /**
-     设置字体，字号，颜色
-     */
-    func setFontName(_ fontNmae: String, fontSize: CGFloat, fontColor: UIColor = .black){
-        self.font = UIFont(name: fontNmae, size: fontSize)
-        self.textColor = fontColor
-    }
-}
-
 //MARK: Base - UIView
 extension UIView {
     

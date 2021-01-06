@@ -3,7 +3,7 @@
 //  FDMTouchLabel
 //
 //  Created by 发抖喵 on 2020/10/28.
-//  优化到子线程
+//  优化到子线程 只能单行 点击问题
 
 import UIKit
 
@@ -42,6 +42,9 @@ class FTCLabel: UILabel {
     // 其他文本属性
     var attrs: [attrModel]?
     
+    // 是否允许点击
+    private var isTouch = true
+    
     /**
      初始化
      
@@ -63,18 +66,25 @@ class FTCLabel: UILabel {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.isUserInteractionEnabled = false
-        if let position = touches.first?.location(in: self) {
-            if ctLineAry != nil && ctLineRectAry.count > 0 {
-                
-                let currentBounds = self.bounds
-                DispatchQueue.global().async { [weak self] in
-                    self?.self.userClickPosition(position, bounds: currentBounds)
+        if isTouch {
+            isTouch = false
+        }else {
+            return
+        }
+        
+        if touches.count > 0 {
+            if let position = touches.first?.location(in: self) {
+                if ctLineAry?.count ?? 0 > 0 && ctLineRectAry.count > 0 {
+                    
+                    let currentBounds = self.bounds
+                    self.userClickPosition(position, bounds: currentBounds)
                 }
             }
         }
         
-        self.isUserInteractionEnabled = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.isTouch = true
+        }
     }
 }
 
@@ -130,12 +140,19 @@ extension FTCLabel {
         // 5. 获取CTLine
         ctLineAry = CTFrameGetLines(ctFrame) as NSArray
         
-        let origins = UnsafeMutablePointer<CGPoint>.allocate(capacity: 20)  // 每一行的基线原点
+        let origins = UnsafeMutablePointer<CGPoint>.allocate(capacity: MemoryLayout<CGPoint>.stride)  // 每一行的基线原点
         CTFrameGetLineOrigins(ctFrame, .init(location: 0, length: 0), origins)
         
-        let lineAscent = UnsafeMutablePointer<CGFloat>.allocate(capacity: 20)   // 上行高度
-        let lineDescent = UnsafeMutablePointer<CGFloat>.allocate(capacity: 20)  // 下行高度
-        let lineLeading = UnsafeMutablePointer<CGFloat>.allocate(capacity: 20)  // 行高
+        let lineAscent = UnsafeMutablePointer<CGFloat>.allocate(capacity: MemoryLayout<CGFloat>.stride)   // 上行高度
+        let lineDescent = UnsafeMutablePointer<CGFloat>.allocate(capacity: MemoryLayout<CGFloat>.stride)  // 下行高度
+        let lineLeading = UnsafeMutablePointer<CGFloat>.allocate(capacity: MemoryLayout<CGFloat>.stride)  // 行高
+        
+        defer {
+            origins.deallocate()
+            lineAscent.deallocate()
+            lineDescent.deallocate()
+            lineLeading.deallocate()
+        }
         
         var ctLine_i = 0
         for ctLine in ctLineAry ?? NSArray() {
@@ -153,11 +170,6 @@ extension FTCLabel {
 
             ctLine_i += 1
         }
-        
-        origins.deallocate()
-        lineAscent.deallocate()
-        lineDescent.deallocate()
-        lineLeading.deallocate()
     }
     
     /**
@@ -170,32 +182,34 @@ extension FTCLabel {
         
         var ctLine_i = 0
         for ctLineRect in ctLineRectAry {
-            
+
             // 判断是否点击在当前行内
             if NSCoordinate.y > ctLineRect.origin.y && NSCoordinate.y < (ctLineRect.origin.y + ctLineRectAry[ctLine_i].height) {
-                
+
+                guard (ctLineAry?.count ?? 0 - 1) >= ctLine_i else { return }
+
                 // 获取点击文字的Index
                 let index = CTLineGetStringIndexForPosition(ctLineAry![ctLine_i] as! CTLine, position)
-                
+
                 // 判断点击位置是否在比对范围内
                 var i = 0
                 for rangeAry in matchingRangeAry {
-                    
+
                     for range in rangeAry {
                         if index >= range.location && index <= (range.location + range.length) {    // 在点击范围
-                            
+
                             DispatchQueue.main.async {[weak self] in
                                 self?.clickTextBlock?(self?.matchingTextAry[i] ?? "")
                             }
-                            
+
                             return
                         }
                     }
-                    
+
                     i += 1
                 }
             }
-            
+
             ctLine_i += 1
         }
     }
