@@ -16,12 +16,15 @@ let FScreenW = UIScreen.main.bounds.width
 
 /// 手机型号
 enum PhoneModel {
-    case iPhone4_4s
-    case iphone5_5s_5c_se
-    case iPhone6_6s_7_8
-    case iPhone6p_6sP_7P_8p
+    case iPhone_4_4s
+    case iphone_5_5s_5c_se
+    case iPhone_6_6s_7_8
+    case iPhone_6p_6sP_7P_8p
     case iPhone_X_XS_11Pro
     case iPhone_XSMax_XR_11_11ProMax
+    case iPhone_12Mini
+    case iPhone_12_12Pro
+    case iPhone_12ProMax
     case otherFullScreen
 }
 
@@ -46,7 +49,14 @@ public func FLog<T,K>(title: T, message: K, file: String = #file, funcName: Stri
 
 /// 是否为全面屏
 public func FPhoneIsScreen() -> Bool {
-    return FDMTool.bottomSafeHeight() > 0
+    let phoneModel = FDMTool.getPhoneModel()
+    
+    if phoneModel == .iPhone_XSMax_XR_11_11ProMax || phoneModel == .iPhone_X_XS_11Pro || phoneModel == .iPhone_12Mini || phoneModel == .iPhone_12ProMax || phoneModel == .iPhone_12_12Pro || phoneModel == .otherFullScreen {
+        
+        return true
+    }
+    
+    return false
 }
 
 
@@ -112,17 +122,23 @@ class FDMTool: NSObject {
     /// 7.获取手机型号
     class func getPhoneModel() -> PhoneModel{
         if FScreenW == 320.0 && FScreenH == 480.0{    // iPhone 4_4s
-            return .iPhone4_4s
-        }else if FScreenW == 320.0 && FScreenH == 568.0 {     // iphone5_5s_5c_se
-            return .iphone5_5s_5c_se
-        }else if FScreenW == 375.0 && FScreenH == 667.0{    // iPhone 6_6s_7_8
-            return .iPhone6_6s_7_8
-        }else if FScreenW == 414.0 && FScreenH == 736.0{    // iPhone 6p_6sP_7P_8P
-            return .iPhone6p_6sP_7P_8p
+            return .iPhone_4_4s
+        }else if FScreenW == 320.0 && FScreenH == 568.0 {     // iphone 5_5s_5c_se
+            return .iphone_5_5s_5c_se
+        }else if FScreenW == 375.0 && FScreenH == 667.0 {    // iPhone 6_6s_7_8
+            return .iPhone_6_6s_7_8
+        }else if FScreenW == 414.0 && FScreenH == 736.0 {    // iPhone 6p_6sP_7P_8P
+            return .iPhone_6p_6sP_7P_8p
         }else if FScreenW == 375.0 && FScreenH == 812.0 {    // iPhone X_XS_11Pro 全面屏
             return .iPhone_X_XS_11Pro
-        }else if FScreenW == 414.0 && FScreenH == 896.0{    // iPhone_XSMax_XR_11_11ProMax 全面屏
+        }else if FScreenW == 414.0 && FScreenH == 896.0 {    // iPhone XSMax_XR_11_11ProMax 全面屏
             return .iPhone_XSMax_XR_11_11ProMax
+        }else if FScreenW == 360.0 && FScreenH == 780.0 {    // iPhone 12Mini
+            return .iPhone_12Mini
+        }else if FScreenW == 390.0 && FScreenH == 844.0 {    // iPhone 12_12Pro
+            return .iPhone_12_12Pro
+        }else if FScreenW == 428.0 && FScreenH == 926.0 {    // iPhone 12ProMax
+            return .iPhone_12ProMax
         }else{  //其他全面屏手机
             return.otherFullScreen
         }
@@ -130,7 +146,7 @@ class FDMTool: NSObject {
     
     /// 8.获取状态栏高度
     class func statusHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
+        if FPhoneIsScreen() {
             return 44.0
         }else{
             return 20.0
@@ -139,7 +155,7 @@ class FDMTool: NSObject {
     
     /// 9.获取tabBar高度
     class func tabBarHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
+        if FPhoneIsScreen() {
             return 49.0 + 34.0
         }else{
             return 49.0
@@ -148,7 +164,7 @@ class FDMTool: NSObject {
     
     /// 10.获取底部安全区高度
     class func bottomSafeHeight() -> CGFloat {
-        if getPhoneModel() == .iPhone_X_XS_11Pro || getPhoneModel() == .iPhone_XSMax_XR_11_11ProMax || getPhoneModel() == .otherFullScreen {
+        if FPhoneIsScreen() {
             return 34.0
         }else{
             return 0.0
