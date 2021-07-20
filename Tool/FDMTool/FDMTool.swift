@@ -172,11 +172,14 @@ class FDMTool: NSObject {
     }
     
     /// 11.获取某一天是周几 return: [1 - 7]
-    class func dayOfWeek(date:Date) -> Int {
-        let interval = date.timeIntervalSince1970
-        let days = Int(interval / 86400)
+    class func dayOfWeek(date: Date?) -> Int {
+        guard date != nil else { return -1 }
 
-        return (days - 3) % 7
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .init(abbreviation: "UTC")!
+        let theComponents = calendar.component(.weekday, from: date!)
+        
+        return [7,1,2,3,4,5,6][theComponents - 1]
     }
     
     /// 12.将周几转为汉字 week:[1 - 7]

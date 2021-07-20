@@ -40,14 +40,14 @@ extension UIColor {
     /**
      1.RGB颜色快捷方式
      */
-    class func RGBA(r:Float,g:Float,b:Float,a:CGFloat = 1) -> UIColor{
+    class func rgba(r:Float,g:Float,b:Float,a:CGFloat = 1) -> UIColor{
         return UIColor(red: CGFloat(r/255.0), green: CGFloat(g/255.0), blue: CGFloat(b/255.0), alpha: a)
     }
     
     /**
-     2.十六进制RGB
+     2.十六进制RGB 不需要#开头
      */
-    class func Hex(_ hex: String, alpha:CGFloat = 1) -> UIColor {
+    class func hex(_ hex: String, alpha:CGFloat = 1) -> UIColor {
         // 去除空格等
         var cString: String = hex.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines).uppercased()
         // 去除#
@@ -156,14 +156,14 @@ extension CGColor {
     /**
      1.RGB颜色快捷方式
      */
-    class func RGBA(r:Float,g:Float,b:Float,a:CGFloat = 1) -> CGColor{
+    class func rgba(r:Float,g:Float,b:Float,a:CGFloat = 1) -> CGColor{
         return UIColor.RGBA(r: r, g: g, b: b, a: a).cgColor
     }
     
     /**
      2.十六进制RGB
      */
-    class func Hex(_ hex: String, alpha:CGFloat = 1) -> CGColor {
+    class func hex(_ hex: String, alpha:CGFloat = 1) -> CGColor {
         return UIColor.Hex(hex, alpha: alpha).cgColor
     }
 }

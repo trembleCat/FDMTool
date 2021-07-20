@@ -9,8 +9,21 @@
 import UIKit
 
 //MARK: - UINavigationControllerDelegate
+
+// let vc = xxx()
+// self.NavigationController.delegate = self
+// push
+
+// 不需要动画 self.NavigationController.delegate = nil
 // 转场时设置Navigation.delegate = 需要动画的控制器， 不需要动画时设置为nil
 // 实现代理与下边的方法，返回transitionAnimation对象，并在该对象实现相应动画功能
+
+/// 转场动画
+
+
+class RegisterController: UIViewController {
+    let transitionAnimation = RegisterTransitonAnimation()
+}
 
 extension RegisterController: UINavigationControllerDelegate {
     

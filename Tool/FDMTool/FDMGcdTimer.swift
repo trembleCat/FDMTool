@@ -13,7 +13,7 @@ class FDMGcdTimer: NSObject {
     var gcdTimer: DispatchSourceTimer?
     
     /// 持续时间
-    var timeCount: Int = 0
+    var duration: Int = 0
     
     /// 首次启动
     var firstStart = false
@@ -28,8 +28,8 @@ class FDMGcdTimer: NSObject {
      - parameter repeating: 重复时间
      - parameter leeway: 允许最大误差
      - parameter calltime: 每次回调后减少的时间
-     - parameter endOfTime: 定时器即将结束回调
-     - parameter calltime: 定时器每打到规定时间回调
+     - parameter endOfTime: 定时器结束回调
+     - parameter calltime: 定时器每达到重复时间回调
      */
     func createTimer(deadline: DispatchTime = .now(), repeating: DispatchTimeInterval = .seconds(1), leeway: DispatchTimeInterval = .seconds(0), calltime: Int = 1 , endOfTime: ((Int) -> ())?, timeInProgress timeElse: ((Int) -> ())?) {
         guard gcdTimer == nil else { return }
@@ -37,11 +37,11 @@ class FDMGcdTimer: NSObject {
         gcdTimer = DispatchSource.makeTimerSource(flags: [], queue: DispatchQueue.global())
         gcdTimer?.schedule(deadline: deadline, repeating: repeating, leeway: leeway)
         gcdTimer?.setEventHandler(handler: { [weak self] in
-            if self?.timeCount ?? 0 <= 0{
-                endOfTime?(self?.timeCount ?? 0)
+            if self?.duration ?? 0 <= 0{
+                endOfTime?(self?.duration ?? 0)
             }else{
-                timeElse?(self?.timeCount ?? 0)
-                self?.timeCount -= calltime
+                timeElse?(self?.duration ?? 0)
+                self?.duration -= calltime
             }
         })
     }

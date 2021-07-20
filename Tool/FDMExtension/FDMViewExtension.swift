@@ -9,6 +9,8 @@
  1.【Class】创建毛玻璃
  2.截取View作为图片
  3.通过Bezier创建某个圆角
+ 4.通过 UIGraphics 绘制圆角并返回image
+ 5.通过 UIGraphics 绘制带圆角的纯色背景
 ==================*/
 
 import UIKit
@@ -42,6 +44,8 @@ extension UIView {
     
     /**
      3.通过Bezier创建某个圆角 -corner:某个角或多个角,多个角传UIRectCorner(rawValue:),四个角传.allCorners
+     
+     注意：会降低帧率，但不会占用CPU 与 内存
      */
     func roundedCorners(corners:UIRectCorner, cornerRadius:Double, viewSize: CGSize){
         let cornerLaye = CAShapeLayer.init()
@@ -51,8 +55,94 @@ extension UIView {
         self.layer.mask = cornerLaye
     }
     
+    /**
+     4.通过 UIGraphics 绘制圆角并返回image
+     
+     请通过 layer.contents 设置 image.cgimage, 并清空背景颜色
+     如果是 UIimagView 请直接使用图片
+     
+     注意：会消耗CPU与内存，但保持帧率
+     */
+    func drawRoundedCorners(_ corners:UIRectCorner, cornerRadius:Double, viewSize: CGSize, complete: @escaping (UIImage?) -> ()) {
+        
+        let size = viewSize
+        let currentLayer = self.layer
+        DispatchQueue.global().async {
+            let path = UIBezierPath(roundedRect: .init(origin: .zero, size: size),
+                                    byRoundingCorners: corners,
+                                    cornerRadii: .init(width: cornerRadius, height: cornerRadius))
+            
+            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+            let context = UIGraphicsGetCurrentContext()
+            guard context != nil else {
+                UIGraphicsEndImageContext()
+                return
+            }
+            
+            context?.addPath(path.cgPath)
+            context?.clip()
+            currentLayer.render(in: context!)
+            
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            DispatchQueue.main.async {
+                complete(image)
+            }
+        }
+    }
+    
+    
+    /**
+     5.通过 UIGraphics 绘制带圆角的纯色背景
+     
+     注意：会消耗CPU与内存
+     */
+    func drawBackgroundColorRoundedCorners(_ corners:UIRectCorner, cornerRadius:Double, viewSize: CGSize, color: UIColor) {
+        let size = viewSize
+        DispatchQueue.global().async {
+            let rect = CGRect.init(origin: .zero, size: size)
+            let path = UIBezierPath(roundedRect: rect,
+                                    byRoundingCorners: corners,
+                                    cornerRadii: .init(width: cornerRadius, height: cornerRadius))
+            
+            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+            let context = UIGraphicsGetCurrentContext()
+            
+            guard context != nil else {
+                UIGraphicsEndImageContext()
+                return
+            }
+            
+            context?.addPath(path.cgPath)
+            context?.clip()
+            
+            context?.setFillColor(color.cgColor)
+            context?.fill(rect)
+            
+            let image = UIGraphicsGetImageFromCurrentImageContext()
+            UIGraphicsEndImageContext()
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.backgroundColor = .clear
+                self?.layer.contents = image?.cgImage
+            }
+        }
+    }
 }
 
+
+//MARK: - UILabel
+extension UILabel {
+    
+    /**
+     设置字体，字号，颜色
+     */
+    func setFontName(_ fontNmae: String, fontSize: CGFloat, fontColor: UIColor = .black){
+        self.font = UIFont(name: fontNmae, size: fontSize)
+        self.textColor = fontColor
+    }
+}
 
 //MARK: Base - UIView
 extension UIView {
