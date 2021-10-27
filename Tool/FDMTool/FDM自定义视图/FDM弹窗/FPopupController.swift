@@ -1,7 +1,6 @@
 //
 //  FPopupController.swift
 //
-//
 //  Created by 发抖喵 on 2021/7/19.
 //
 
@@ -11,29 +10,31 @@ import SnapKit
 //MARK: - 弹窗控制器
 open class FPopupController: UIViewController {
     
-    //MARK: - BaseProperty
-    
-    /// 内容高度
-    open var contentHeight: CGFloat { 300 }
-    
-    /// 取消按钮高度
-    open var cancelHeight: CGFloat { 50 }
+    //MARK: - BaseValue
     
     /// 动画执行时长
     open var animationDuration: TimeInterval { 0.15 }
+    /// 内容高度
+    open var contentHeight: CGFloat { 300 }
+    /// 底部高度
+    open var bottomHeight: CGFloat { getBottomHeight() }
+    /// 点击屏幕隐藏
+    open var touchHidden: Bool { true }
+    
     
     /// 显示 Frame
-    public var showFrame: CGRect { getShowFrame() }
-    
+    private var showFrame: CGRect { getShowFrame() }
     /// 隐藏 Frame
-    public var dismissFrame: CGRect { getDismissFrame() }
+    private var dismissFrame: CGRect { getDismissFrame() }
     
+    //MARK: - BaseUI
+    public lazy var contentView = UIView()
     
-    //MARK: - InitUI
-    public let presentView = UIView()
-    public let cancelButton = UIButton()
-    public let spacingView = UIView()
-    public let contentView = UIView()
+    private lazy var dropView = UIControl()
+    private lazy var presentView = UIView()
+    private lazy var bottomView = UIView()
+    private lazy var cancelButton = UIButton()
+    private lazy var spacingView = UIView()
     
     
     //MARK: - BaseAction
@@ -70,14 +71,30 @@ open class FPopupController: UIViewController {
 //MARK: - UI
 extension FPopupController {
     private func fSetupUI() {
-        self.view.addSubview(presentView)
-        self.presentView.addSubview(cancelButton)
+        self.view.addSubview(dropView)
+        self.dropView.addSubview(presentView)
+        
+        self.presentView.addSubview(bottomView)
         self.presentView.addSubview(contentView)
+        
+        self.bottomView.addSubview(cancelButton)
         self.cancelButton.addSubview(spacingView)
+        
+        /* dropView */
+        dropView.addTarget(self, action: #selector(clickDropView), for: .touchUpInside)
+        dropView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         /* presentView */
         presentView.backgroundColor = .white
         presentView.frame = dismissFrame
+        
+        /* bottomView */
+        bottomView.snp.makeConstraints { make in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(bottomHeight)
+        }
         
         /* cancelButton */
         cancelButton.setTitle("取消", for: .normal)
@@ -86,14 +103,15 @@ extension FPopupController {
         cancelButton.addTarget(self, action: #selector(clickCancelButton), for: .touchUpInside)
         cancelButton.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.bottom.equalToSuperview().offset(-5)
-            make.height.equalTo(cancelHeight)
+            make.top.equalToSuperview()
+            make.height.equalTo(55)
         }
         
         /* spacingView */
         spacingView.backgroundColor = .init(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
         spacingView.snp.makeConstraints { make in
-            make.left.top.right.equalToSuperview()
+            make.top.equalToSuperview()
+            make.left.right.equalToSuperview()
             make.height.equalTo(1)
         }
         
@@ -101,6 +119,7 @@ extension FPopupController {
         contentView.snp.makeConstraints { make in
             make.left.right.top.equalToSuperview()
             make.bottom.equalTo(cancelButton.snp.top)
+            
         }
     }
 }
@@ -109,9 +128,20 @@ extension FPopupController {
 extension FPopupController {
     
     /**
+     点击背景
+     */
+    @objc private func clickDropView() {
+        guard touchHidden else {
+            return
+        }
+        
+        clickCancelButton()
+    }
+    
+    /**
      点击取消
      */
-    @objc func clickCancelButton() {
+    @objc private func clickCancelButton() {
         self.dismiss(animated: true, completion: nil)
     }
 }
@@ -125,10 +155,9 @@ extension FPopupController {
     private func show() {
         UIView.animate(withDuration: animationDuration) { [unowned self] in
             self.presentView.frame = self.showFrame
-            self.viewCornerRadius(self.presentView.bounds)
+            self.viewCornerRadius(self.presentView)
             
         }
-        
     }
     
     /**
@@ -137,7 +166,6 @@ extension FPopupController {
     private func hidden() {
         UIView.animate(withDuration: animationDuration) { [unowned self] in
             self.presentView.frame = self.dismissFrame
-            
         }
         
     }
@@ -151,7 +179,7 @@ extension FPopupController {
     private func getShowFrame() -> CGRect {
         let width = view.bounds.width
         
-        let height = (contentHeight + cancelHeight) > (view.bounds.height - 88) ? (view.bounds.height - 88) : (contentHeight + cancelHeight)
+        let height = (contentHeight + bottomHeight) > (view.bounds.height - 88) ? (view.bounds.height - 88) : (contentHeight + bottomHeight)
         
         let y = view.bounds.height - height
         
@@ -165,9 +193,21 @@ extension FPopupController {
         let y = view.bounds.height + 10
         let width = view.bounds.width
         
-        let height = (contentHeight + cancelHeight) > (view.bounds.height - 88) ? (view.bounds.height - 88) : (contentHeight + cancelHeight)
+        let height = (contentHeight + bottomHeight) > (view.bounds.height - 88) ? (view.bounds.height - 88) : (contentHeight + bottomHeight)
         
         return .init(x: 0, y: y, width: width, height: height)
+    }
+    
+    /**
+     获取底部高度
+     */
+    private func getBottomHeight() -> CGFloat {
+        if #available(iOS 11.0, *) {
+            let safeBottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+            return (safeBottom <= 0 ? 15 : safeBottom) + 35
+        }
+        
+        return 50
     }
 }
 
@@ -177,15 +217,15 @@ extension FPopupController {
     /**
      圆角
      */
-    private func viewCornerRadius(_ rect: CGRect) {
-        let path = UIBezierPath(roundedRect: rect,
+    private func viewCornerRadius(_ view: UIView) {
+        let path = UIBezierPath(roundedRect: view.bounds,
                                 byRoundingCorners: [.topLeft, .topRight],
                                 cornerRadii: .init(width: 20, height: 20))
         
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath
-        shapeLayer.frame = .init(origin: .zero, size: rect.size)
+        shapeLayer.frame = .init(origin: .zero, size: view.bounds.size)
         
-        presentView.layer.mask = shapeLayer
+        view.layer.mask = shapeLayer
     }
 }

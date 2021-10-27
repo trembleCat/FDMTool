@@ -58,7 +58,7 @@ extension FAlertAction {
 //MARK: - 青湖弹窗
 public class FAlertController: UIViewController {
     
-    //MARK: - BaseProperty
+    //MARK: - BaseValue
     public var alertTitle: String? {
         set{ titleLabel.text = newValue }
         get{ titleLabel.text }
